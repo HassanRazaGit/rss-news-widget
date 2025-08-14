@@ -22,13 +22,13 @@
             max-width: 1400px;
             margin: 0 auto;
             background: white;
-            border-radius: 12px;
+            /* border-radius: 12px; */
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
 
         .widget-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: black;
             color: white;
             padding: 20px;
             text-align: center;
@@ -60,20 +60,27 @@
         }
 
         .column-header {
-            padding: 15px 20px;
-            font-weight: 600;
-            font-size: 18px;
-            color: white;
+            padding: 20px;
             text-align: center;
+            background: white;
+            border-bottom: 2px solid #f0f0f0;
         }
 
-        .cmyuk-header {
-            background: linear-gradient(135deg, #667eea 0%, #4834d4 100%);
+        .column-header img {
+            max-width: 200px;
+            max-height: 60px;
+            height: 60px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        /* .cmyuk-header {
+            border-bottom-color: #667eea;
         }
 
         .ufabrik-header {
-            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
-        }
+            border-bottom-color: #2ecc71;
+        } */
 
         .news-container {
             flex: 1;
@@ -93,7 +100,7 @@
 
         .news-item:hover {
             background: #f8f9ff;
-            transform: translateX(3px);
+            /* transform: translateX(3px); */
         }
 
         .news-item:last-child {
@@ -376,7 +383,8 @@
             <!-- CMYUK Column -->
             <div class="news-column">
                 <div class="column-header cmyuk-header">
-                    CMYUK News
+                    <img src="cmyuk_logo.png" alt="CMYUK" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div style="display: none; font-weight: 600; font-size: 18px; color: #667eea;">CMYUK News</div>
                 </div>
                 <div class="news-container" id="cmyukContainer">
                     <div class="loading">
@@ -389,7 +397,8 @@
             <!-- UFabrik Column -->
             <div class="news-column">
                 <div class="column-header ufabrik-header">
-                    UFabrik News
+                    <img src="ufabrik_logo.png" alt="UFabrik" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div style="display: none; font-weight: 600; font-size: 18px; color: #2ecc71;">UFabrik News</div>
                 </div>
                 <div class="news-container" id="ufabrikContainer">
                     <div class="loading">
