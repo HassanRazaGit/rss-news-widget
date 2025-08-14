@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMYUK & UFabrik News Feed</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .widget-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .widget-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .widget-header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .widget-header p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        .news-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px;
+            background: #e9ecef;
+        }
+
+        .news-column {
+            background: white;
+            display: flex;
+            flex-direction: column;
+            height: 700px;
+        }
+
+        .column-header {
+            padding: 15px 20px;
+            font-weight: 600;
+            font-size: 18px;
+            color: white;
+            text-align: center;
+        }
+
+        .cmyuk-header {
+            background: linear-gradient(135deg, #667eea 0%, #4834d4 100%);
+        }
+
+        .ufabrik-header {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        }
+
+        .news-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        .news-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .news-item:hover {
+            background: #f8f9ff;
+            transform: translateX(3px);
+        }
+
+        .news-item:last-child {
+            border-bottom: none;
+        }
+
+        .news-image {
+            flex-shrink: 0;
+            width: 80px;
+            height: 60px;
+            border-radius: 6px;
+            overflow: hidden;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .news-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .news-item:hover .news-image img {
+            transform: scale(1.05);
+        }
+
+        .news-image-placeholder {
+            width: 30px;
+            height: 30px;
+            background: #ddd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .news-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .news-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            line-height: 1.3;
+            text-decoration: none;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .news-title:hover {
+            color: #667eea;
+        }
+
+        .news-description {
+            color: #666;
+            font-size: 13px;
+            line-height: 1.4;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .news-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: #999;
+        }
+
+        .news-date {
+            background: #e8f4f8;
+            padding: 3px 6px;
+            border-radius: 10px;
+            color: #5a6c7d;
+        }
+
+        .pagination-container {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .pagination-info {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .pagination-btn {
+            background: #fff;
+            border: 1px solid #ddd;
+            color: #333;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .pagination-btn:disabled {
+            background: #f5f5f5;
+            color: #ccc;
+            cursor: not-allowed;
+            border-color: #e9ecef;
+        }
+
+        .pagination-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .pagination-dots {
+            color: #999;
+            font-weight: bold;
+            padding: 6px 4px;
+            font-size: 12px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            text-align: center;
+            padding: 30px 20px;
+            color: #e74c3c;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 10px;
+            transition: opacity 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            opacity: 0.9;
+        }
+
+        .news-container::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .news-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .news-container::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 2px;
+        }
+
+        .news-container::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .widget-header h1 {
+                font-size: 22px;
+            }
+
+            .widget-header p {
+                font-size: 14px;
+            }
+            
+            .news-columns {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .news-column {
+                height: 500px;
+            }
+            
+            .news-item {
+                flex-direction: column;
+                gap: 10px;
+                padding: 15px;
+            }
+
+            .news-image {
+                width: 100%;
+                height: 120px;
+                align-self: stretch;
+            }
+
+            .pagination-container {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+
+            .pagination-controls {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .column-header {
+                font-size: 16px;
+                padding: 12px 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .pagination-btn {
+                padding: 5px 8px;
+                font-size: 11px;
+                min-width: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="widget-container">
+        <div class="widget-header">
+            <h1>News Dashboard</h1>
+            <p>Latest updates from CMYUK and UFabrik</p>
+        </div>
+        
+        <div class="news-columns">
+            <!-- CMYUK Column -->
+            <div class="news-column">
+                <div class="column-header cmyuk-header">
+                    CMYUK News
+                </div>
+                <div class="news-container" id="cmyukContainer">
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <p>Loading CMYUK news...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- UFabrik Column -->
+            <div class="news-column">
+                <div class="column-header ufabrik-header">
+                    UFabrik News
+                </div>
+                <div class="news-container" id="ufabrikContainer">
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <p>Loading UFabrik news...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class DualRSSWidget {
+            constructor() {
+                this.feeds = {
+                    cmyuk: {
+                        container: document.getElementById('cmyukContainer'),
+                        url: 'https://www.cmyuk.com/news/rss/index.php',
+                        allNewsItems: [],
+                        currentPage: 1,
+                        itemsPerPage: 5
+                    },
+                    ufabrik: {
+                        container: document.getElementById('ufabrikContainer'),
+                        url: 'https://www.ufabrik.com/news/rss/index.php',
+                        allNewsItems: [],
+                        currentPage: 1,
+                        itemsPerPage: 5
+                    }
+                };
+                
+                this.proxies = [
+                    'https://api.allorigins.win/get?url=',
+                    'https://thingproxy.freeboard.io/fetch/',
+                    'https://cors-anywhere.herokuapp.com/',
+                    'https://api.codetabs.com/v1/proxy?quest='
+                ];
+                
+                this.init();
+            }
+
+            async init() {
+                // Load both feeds simultaneously
+                await Promise.all([
+                    this.loadNews('cmyuk'),
+                    this.loadNews('ufabrik')
+                ]);
+                
+                // Refresh every 30 minutes
+                setInterval(() => {
+                    this.loadNews('cmyuk');
+                    this.loadNews('ufabrik');
+                }, 30 * 60 * 1000);
+            }
+
+            async loadNews(feedKey) {
+                const feed = this.feeds[feedKey];
+                this.showLoading(feedKey);
+                
+                for (let i = 0; i < this.proxies.length; i++) {
+                    try {
+                        const success = await this.tryProxy(feedKey, i);
+                        if (success) {
+                            return;
+                        }
+                    } catch (error) {
+                        console.warn(`${feedKey} - Proxy ${i} failed:`, error.message);
+                        continue;
+                    }
+                }
+                
+                // If all proxies fail, try direct fetch
+                try {
+                    await this.tryDirectFetch(feedKey);
+                } catch (error) {
+                    console.error(`${feedKey} - All methods failed:`, error);
+                    this.showError(feedKey, 'Unable to load RSS feed. This may be due to CORS restrictions or network issues.');
+                }
+            }
+
+            async tryProxy(feedKey, proxyIndex) {
+                const feed = this.feeds[feedKey];
+                const proxy = this.proxies[proxyIndex];
+                const url = `${proxy}${encodeURIComponent(feed.url)}`;
+
+                const fetchPromise = fetch(url, {
+                    headers: {
+                        'Accept': 'application/json, text/plain, */*',
+                    },
+                    cache: 'no-cache'
+                });
+
+                const timeoutPromise = new Promise((_, reject) => {
+                    setTimeout(() => reject(new Error('Request timeout')), 8000);
+                });
+
+                try {
+                    const response = await Promise.race([fetchPromise, timeoutPromise]);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    let xmlContent;
+                    
+                    if (proxyIndex === 0) { // allorigins.win returns JSON
+                        const data = await response.json();
+                        xmlContent = data.contents;
+                    } else { // Other proxies return direct content
+                        xmlContent = await response.text();
+                    }
+                    
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(xmlContent, 'text/xml');
+                    
+                    const parseError = xmlDoc.querySelector('parsererror');
+                    if (parseError) {
+                        throw new Error('Invalid XML content received');
+                    }
+                    
+                    const items = xmlDoc.querySelectorAll('item');
+                    
+                    if (items.length === 0) {
+                        throw new Error('No news items found in RSS feed');
+                    }
+                    
+                    feed.allNewsItems = Array.from(items);
+                    feed.currentPage = 1;
+                    this.renderCurrentPage(feedKey);
+                    return true;
+                    
+                } catch (error) {
+                    throw error;
+                }
+            }
+
+            async tryDirectFetch(feedKey) {
+                const feed = this.feeds[feedKey];
+                const response = await fetch(feed.url, {
+                    mode: 'cors',
+                    headers: {
+                        'Accept': 'application/rss+xml, application/xml, text/xml',
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const xmlContent = await response.text();
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(xmlContent, 'text/xml');
+                
+                const items = xmlDoc.querySelectorAll('item');
+                
+                if (items.length === 0) {
+                    throw new Error('No news items found');
+                }
+                
+                feed.allNewsItems = Array.from(items);
+                feed.currentPage = 1;
+                this.renderCurrentPage(feedKey);
+            }
+
+            showLoading(feedKey) {
+                const feed = this.feeds[feedKey];
+                const brandName = feedKey === 'cmyuk' ? 'CMYUK' : 'UFabrik';
+                feed.container.innerHTML = `
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <p>Loading ${brandName} news...</p>
+                    </div>
+                `;
+            }
+
+            showError(feedKey, message) {
+                const feed = this.feeds[feedKey];
+                const brandName = feedKey === 'cmyuk' ? 'CMYUK' : 'UFabrik';
+                feed.container.innerHTML = `
+                    <div class="error">
+                        <h3>Failed to load ${brandName} news</h3>
+                        <p style="font-size: 12px;">${message}</p>
+                        <button class="refresh-btn" onclick="widget.loadNews('${feedKey}')">Try Again</button>
+                    </div>
+                `;
+            }
+
+            renderCurrentPage(feedKey) {
+                const feed = this.feeds[feedKey];
+                const totalPages = Math.ceil(feed.allNewsItems.length / feed.itemsPerPage);
+                const startIndex = (feed.currentPage - 1) * feed.itemsPerPage;
+                const endIndex = startIndex + feed.itemsPerPage;
+                const currentItems = feed.allNewsItems.slice(startIndex, endIndex);
+                
+                const newsHTML = this.generateNewsHTML(currentItems);
+                const paginationHTML = this.generatePaginationHTML(feedKey, totalPages);
+                
+                feed.container.innerHTML = `
+                    <div class="news-items-container">
+                        ${newsHTML}
+                    </div>
+                    ${paginationHTML}
+                `;
+            }
+
+            generateNewsHTML(items) {
+                return items.map(item => {
+                    const title = this.getTextContent(item, 'title');
+                    const description = this.getTextContent(item, 'description');
+                    const link = this.getTextContent(item, 'link');
+                    const pubDate = this.getTextContent(item, 'pubDate');
+                    
+                    const imageElement = item.querySelector('image url');
+                    const imageUrl = imageElement ? imageElement.textContent.trim() : null;
+                    
+                    const formattedDate = this.formatDate(pubDate);
+                    const truncatedDescription = this.truncateText(description, 100);
+                    
+                    const imageHTML = imageUrl ? 
+                        `<div class="news-image">
+                            <img src="${imageUrl}" alt="${title}" onerror="this.parentElement.innerHTML='<div class=\\'news-image-placeholder\\'>📰</div>'">
+                         </div>` :
+                        `<div class="news-image">
+                            <div class="news-image-placeholder">📰</div>
+                         </div>`;
+                    
+                    return `
+                        <div class="news-item" onclick="window.open('${link}', '_blank')">
+                            ${imageHTML}
+                            <div class="news-content">
+                                <h3 class="news-title">${title}</h3>
+                                <p class="news-description">${truncatedDescription}</p>
+                                <div class="news-meta">
+                                    <span class="news-date">${formattedDate}</span>
+                                    <span style="font-size: 10px;">Click to read →</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            generatePaginationHTML(feedKey, totalPages) {
+                const feed = this.feeds[feedKey];
+                if (totalPages <= 1) return '';
+                
+                const startItem = (feed.currentPage - 1) * feed.itemsPerPage + 1;
+                const endItem = Math.min(feed.currentPage * feed.itemsPerPage, feed.allNewsItems.length);
+                
+                let paginationButtons = '';
+                
+                // Previous button
+                paginationButtons += `
+                    <button class="pagination-btn" ${feed.currentPage === 1 ? 'disabled' : ''} 
+                            onclick="widget.goToPage('${feedKey}', ${feed.currentPage - 1})">
+                        ←
+                    </button>
+                `;
+                
+                // Page numbers (simplified for smaller space)
+                const maxVisiblePages = 3;
+                let startPage = Math.max(1, feed.currentPage - Math.floor(maxVisiblePages / 2));
+                let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+                
+                if (endPage - startPage < maxVisiblePages - 1) {
+                    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                }
+                
+                // First page + dots
+                if (startPage > 1) {
+                    paginationButtons += `
+                        <button class="pagination-btn" onclick="widget.goToPage('${feedKey}', 1)">1</button>
+                    `;
+                    if (startPage > 2) {
+                        paginationButtons += '<span class="pagination-dots">...</span>';
+                    }
+                }
+                
+                // Page numbers
+                for (let i = startPage; i <= endPage; i++) {
+                    paginationButtons += `
+                        <button class="pagination-btn ${i === feed.currentPage ? 'active' : ''}" 
+                                onclick="widget.goToPage('${feedKey}', ${i})">
+                            ${i}
+                        </button>
+                    `;
+                }
+                
+                // Last page + dots
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) {
+                        paginationButtons += '<span class="pagination-dots">...</span>';
+                    }
+                    paginationButtons += `
+                        <button class="pagination-btn" onclick="widget.goToPage('${feedKey}', ${totalPages})">${totalPages}</button>
+                    `;
+                }
+                
+                // Next button
+                paginationButtons += `
+                    <button class="pagination-btn" ${feed.currentPage === totalPages ? 'disabled' : ''} 
+                            onclick="widget.goToPage('${feedKey}', ${feed.currentPage + 1})">
+                        →
+                    </button>
+                `;
+                
+                return `
+                    <div class="pagination-container">
+                        <div class="pagination-info">
+                            ${startItem}-${endItem} of ${feed.allNewsItems.length}
+                        </div>
+                        <div class="pagination-controls">
+                            ${paginationButtons}
+                        </div>
+                    </div>
+                `;
+            }
+
+            goToPage(feedKey, page) {
+                const feed = this.feeds[feedKey];
+                const totalPages = Math.ceil(feed.allNewsItems.length / feed.itemsPerPage);
+                if (page >= 1 && page <= totalPages) {
+                    feed.currentPage = page;
+                    this.renderCurrentPage(feedKey);
+                    feed.container.scrollTop = 0;
+                }
+            }
+
+            getTextContent(item, tagName) {
+                const element = item.querySelector(tagName);
+                return element ? element.textContent.trim() : '';
+            }
+
+            formatDate(dateString) {
+                if (!dateString) return 'No date';
+                
+                try {
+                    const date = new Date(dateString);
+                    const now = new Date();
+                    const diffTime = Math.abs(now - date);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    
+                    if (diffDays === 1) return 'Yesterday';
+                    if (diffDays < 7) return `${diffDays}d ago`;
+                    if (diffDays < 30) return `${Math.ceil(diffDays/7)}w ago`;
+                    
+                    return date.toLocaleDateString('en-GB', {
+                        day: 'numeric',
+                        month: 'short'
+                    });
+                } catch (error) {
+                    return 'No date';
+                }
+            }
+
+            truncateText(text, maxLength) {
+                if (!text) return '';
+                
+                const cleanText = text.replace(/<[^>]*>/g, '').trim();
+                
+                if (cleanText.length <= maxLength) return cleanText;
+                
+                return cleanText.substring(0, maxLength).trim() + '...';
+            }
+        }
+
+        // Initialize the widget when the page loads
+        let widget;
+        document.addEventListener('DOMContentLoaded', () => {
+            widget = new DualRSSWidget();
+        });
+    </script>
+</body>
+</html>
